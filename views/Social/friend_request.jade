@@ -1,11 +1,11 @@
 !!! 5
-html(manifest='cache.manifest')
+html
   head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, minimum-scale=1, maximum-scale=1')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
-    title Home
+    title Friends
     link(rel='stylesheet', href='/stylesheets/jquery.mobile-1.0.css')
     link(rel='stylesheet', href='/stylesheets/jquery.mobile.scrollview.css')
     //
@@ -27,45 +27,23 @@ html(manifest='cache.manifest')
     script(src='/javascripts/jquery.mobile.scrollview.js')
     script(src='/javascripts/scrollview.js')
   body
-    #jqm-home.type-interior(data-role='page', data-theme='b')
+    #jqm-home.type-interior(data-role='page', data-theme='a')
       div(data-role='header', data-position='fixed')
-        h1 Pragma-Portal
+        h1 Friend Request
         //
            <a href="menu.html" data-transition="pop" data-theme="a" data-rel="dialog" data-icon="grid" data-iconpos="notext" class="ui-btn-left"></a> 
-        div(data-role='navbar')
-          ul
-            li
-              a.ui-btn-active.ui-state-persist(href='home.html') Profile
-            li
-              a(href='/wallpost') Wall
-            li
-              a(href='/show/friends') Friends
+        a.ui-btn-right(href='/userinfo', data-direction='reverse', data-theme='a', data-icon='home', data-iconpos='notext') home
       div(data-role='content')
-        -each user in users 
-          ul(data-role='listview', data-inset='true', style='padding: 0px;')
+        ul(data-role='listview', data-inset='true', data-position='fixed')
+          -each user in users
             li
-              img(src='/uploads/photos/'+user.photo, width=40)
+              img(src='/uploads/photos/'+user.photo, width=60)
               h3(style='margin: 0px; padding: 0px;')=user.username
               h6=user.sex
-              p=user.location
-          ul(data-role='listview', data-theme='c', data-inset='true')
-            li(data-role='list-divider') Age
-            li
-              h5=user.age
-            li(data-role='list-divider') Email Id
-            li
-              h5=user.email
-          ul(data-role='listview', data-theme='c', data-inset='true')
-            li(data-role='list-divider') More
-            li
-              a(href='/show/friendrequests') Friend Request
-            li
-              a(href='/videos') Video Posted
-            li
-              a(href='upload_video.html') Upload New Video
-            li
-              a(href='/user/edit/'+user._id) Edit Profile
-            li
-              a(href='/sessions') Log Out
+              form( method="post", action="/accept/request")
+                input( type="hidden", name="_id", value=user._id.toHexString())
+                div(align="center")
+                  input( type="submit", name="Submit",value="Accept Request")  
+           
       div(data-role='footer', data-position='fixed')
         h4 Powered By:Pragmatic Techsoft

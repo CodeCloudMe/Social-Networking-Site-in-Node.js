@@ -1,5 +1,5 @@
 !!! 5
-html(manifest='cache.manifest')
+html
   head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, minimum-scale=1, maximum-scale=1')
@@ -41,31 +41,28 @@ html(manifest='cache.manifest')
             li
               a(href='/show/friends') Friends
       div(data-role='content')
-        -each user in users 
-          ul(data-role='listview', data-inset='true', style='padding: 0px;')
-            li
-              img(src='/uploads/photos/'+user.photo, width=40)
-              h3(style='margin: 0px; padding: 0px;')=user.username
-              h6=user.sex
-              p=user.location
-          ul(data-role='listview', data-theme='c', data-inset='true')
-            li(data-role='list-divider') Age
-            li
-              h5=user.age
-            li(data-role='list-divider') Email Id
+        ul(data-role='listview', data-inset='true', style='padding: 0px;')
+          li
+            img(src='/uploads/photos/'+user.photo, width=40)
+            h3(style='margin: 0px; padding: 0px;')=user.username
+            h6=user.sex
+            p=user.location
+        ul(data-role='listview', data-theme='c', data-inset='true')
+          li(data-role='list-divider') Age
+          li
+            h5=user.age
+          li(data-role='list-divider') Email Id
             li
               h5=user.email
-          ul(data-role='listview', data-theme='c', data-inset='true')
-            li(data-role='list-divider') More
-            li
-              a(href='/show/friendrequests') Friend Request
-            li
-              a(href='/videos') Video Posted
-            li
-              a(href='upload_video.html') Upload New Video
-            li
-              a(href='/user/edit/'+user._id) Edit Profile
-            li
-              a(href='/sessions') Log Out
+        ul(data-role='listview', data-theme='c', data-inset='true')
+          li(data-role='list-divider') More
+          li
+            a(href='/userinfo') Home
+          li
+            a(href ='/user/videos/'+user._id.toHexString()) Videos Posted
+          li
+            a(href='/friends/wallposts/'+user._id.toHexString()) Wall
+          li
+            a(href='/sessions') Log Out
       div(data-role='footer', data-position='fixed')
         h4 Powered By:Pragmatic Techsoft
