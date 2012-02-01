@@ -21,7 +21,7 @@ html
                           td(bgcolor='#F5F2F2')
                             div(class="left-navigation")
                               img(src='/images/right_nav_dop.gif', width='49', height='30', alt='')
-                              a(href='') Profile
+                              a(href='/userinfo') Profile
                         tr
                           td(bgcolor='#F5F2F2')
                             div(class="left-navigation")
@@ -36,7 +36,7 @@ html
                           td(bgcolor='#F5F2F2')
                             div(class="left-navigation")
                               img(src='/images/right_nav_dop.gif', width='49', height='30', alt='')
-                              a(href='/videos') Videos Posted
+                              a(href='/user/videos/'+ currentUser._id.toHexString()) Videos Posted
                               
                         tr
                           td(bgcolor='#F5F2F2')
@@ -86,12 +86,13 @@ html
                                               div
                                                 label(for='user_sex') Sex:
                                                 select(id='user_sex', name='user[sex]')
-                                                  option(id='user_male',value =user.sex,selected=1)='male'
-                                                  option(id='user_female',value =user.sex)='female'
+                                                  option(id='user_male',selected=1)='male'
+                                                  option(id='user_female')='female'
                                               br
                                               div
                                                 label(for='user_location') Location:
                                                 input(id='user_location',name='user[location]', value=user.location || '')
+                                              br
                                               br
                                               div(align="center")
                                                 input( type="submit", name="Submit",value="Save Changes")

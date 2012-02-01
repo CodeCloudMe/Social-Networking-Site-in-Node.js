@@ -1,4 +1,9 @@
-body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginheight='0')
+html
+  head
+    title sold_0002
+    meta(http-equiv='Content-Type', content='text/html; charset=windows-1251')
+    link(href='style.css', rel='stylesheet', type='text/css')
+  body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginheight='0')
     table(width='780', border='0', align='center', cellpadding='0', cellspacing='0')
       tr
         td(width='780', height='100%', align='center', valign='middle', bgcolor='#666666', style='padding: 11px;')
@@ -21,6 +26,11 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                           td(bgcolor='#F5F2F2')
                             div(class="left-navigation")
                               img(src='/images/right_nav_dop.gif', width='49', height='30', alt='')
+                              a(href='/user/wallposts/'+currentUser._id.toHexString()) Wall
+                        tr
+                          td(bgcolor='#F5F2F2')
+                            div(class="left-navigation")
+                              img(src='/images/right_nav_dop.gif', width='49', height='30', alt='')
                               a(href='/show/friends') Friends
                         tr
                           td(bgcolor='#F5F2F2')
@@ -31,7 +41,7 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                           td(bgcolor='#F5F2F2')
                             div(class="left-navigation")
                               img(src='/images/right_nav_dop.gif', width='49', height='30', alt='')
-                              a(href='/videos') Videos Posted
+                              a(href='/user/videos/'+currentUser._id.toString()) Videos Posted
                               
                         tr
                           td(bgcolor='#F5F2F2')
@@ -43,6 +53,8 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                             div(class="left-navigation")
                               img(src='/images/right_nav_dop.gif', width='49', height='30', alt='')
                               a(href='/userinfo/new') Change Profile Picture
+                         
+                        
 
               td(width='11', rowspan='2')
                 img(src='/images/spacer.gif', width='11', height='1')
@@ -51,11 +63,10 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                   tr
                     td
                   tr
-                  
                     td
                       table(width='100%', border='0', cellspacing='5', cellpadding='0')
                         tr
-                          td(align="center")
+                          td
                             h2 Friends
                         tr
                           td
@@ -67,12 +78,12 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                                       td(bgcolor='#F5F2F2', style='padding: 2px;')
                                         table(width='100%', border='0', cellspacing='5', cellpadding='0', bgcolor='#FFFFFF')
                                           tr
-                                            td
+                                            div
                                               ol
                                                 -each user in users
                                                   li
                                                     div 
-                                                      a(href="/friendinfo/show/"+user._id.toHexString())!= user.first_name+"&nbsp;"+user.last_name
+                                                      a(href="/friendsinfo/show/"+user._id.toHexString())!= user.first_name+"&nbsp;"+user.last_name
                                                     div
                                                       img(src='/uploads/photos/'+user.photo, width=80, name='user[image]')
                                                     br
@@ -87,8 +98,8 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                                                     div
                                                       span(class="user-label") Location:
                                                       div.location= user.location 
-                                                    br
-                              
+                                                    br   
+                               
                                    
             tr
               td(valign='bottom', bgcolor='#FFFFFF', style='padding: 9px;')
@@ -102,6 +113,5 @@ body(bgcolor='#FFFFFF', leftmargin='0', topmargin='0', marginwidth='0', marginhe
                           td.white
                             | Copyright © Pragtech.co.in. All rights reserved.
                             a(href='http://www.pragtech.co.in', style='color: #FFFFFF; text-decoration: none;') Pragmatic Techsoft
-
  
       
