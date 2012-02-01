@@ -84,9 +84,10 @@ function defineModels(mongoose, fn) {
    */
   var Comment = new Schema({
     user_id: ObjectId,
-    photo:String,
+    //photo:String,
     date: Date,
-    body: String
+    body: String,
+    post_id:ObjectId,
   });
   
   // register virtual members
@@ -137,8 +138,9 @@ var WallPost = new Schema({
     created: Date,
     modified: Date,
     //tags: [String],
-    user_id: ObjectId,
-    comments: [Comment]
+    user_id:ObjectId,
+    posted_on_user_id : ObjectId,
+    //comments: [Comment]
   });
     
   var monthNames = [ 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli',
