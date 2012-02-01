@@ -236,9 +236,9 @@ app.get('/', loadUser, function(req, res) {
 
 app.get('/share/wallpost/:id', loadUser, function(req, res,next){
    var post = WallPost.findById(req.params.id,function(err, pst) {
-     console.log('============user=======', pst.user_id); 
+     console.log(pst.user_id); 
      var user = User.findById({_id:pst.user_id},function(err, user) { 
-      console.log('============user=======', user.username);
+      console.log(user.username);
       var post = new WallPost();
       post.posted_on_user_id = req.currentUser.id;
       post.user_id = req.currentUser.id;
@@ -259,7 +259,6 @@ app.get('/share/wallpost/:id', loadUser, function(req, res,next){
 //Delete WallPost
 app.get('/delete/wallpost/:id', loadUser, function(req, res, next) {
   WallPost.findById(req.params.id, function(err, post) {
-   console.log('========================post=========='+post._id);
    if (!post)
       return next(new NotFound('Post Not Found'));
     else {
@@ -281,7 +280,6 @@ app.get('/delete/wallpost/:id', loadUser, function(req, res, next) {
  
 app.get('/delete/comment/:id', loadUser, function(req, res, next) {
   Comment.findById(req.param('id'), function(err, comment) {
-   console.log('========================post=========='+comment._id);
    if (!comment)
       return next(new NotFound('Comment Not Found'));
     else {
@@ -302,16 +300,7 @@ app.get('/delete/comment/:id', loadUser, function(req, res, next) {
 //Add Comment To The Wall Post
 
 app.post('/user/wallposts/comment', loadUser, function(req, res, next) {
-  console.log('=======================request========'+req);
-  console.log("=======================request params========"+req.body._id);
-  console.log("=======================request params body========"+req.body.commentbody);
-  
   var post = WallPost.findById(req.body._id,function(err, post) {
-    console.log('============================post=======' +post);
-    console.log('============================post user=======' +post.user_id);
-    console.log('============================post on user id=======' +post.posted_on_user_id);
-     
-    console.log('============================comments=======' +post.comments);
     if (!post)
       return next(new NotFound('Post Not found'));
     else {
@@ -338,7 +327,6 @@ app.post('/user/wallposts/comment', loadUser, function(req, res, next) {
 
         req.flash('info', 'Thank you! Your comment has been saved.');
         res.redirect('/user/wallposts/'+post.posted_on_user_id);
-        //res.redirect('/' + req.params.year + '/' + req.params.month + '/' + req.params.day + '/' + req.params.slug + '/');
       }); 
     }
   });
@@ -357,12 +345,9 @@ app.get('/user/wallposts/:id', loadUser, function(req, res) {
   var comntArray = new Array();
   var comntUser = new Array();
   var clicked_user =  User.findById(req.param('id'),function(err,clickeduser) {
-    console.log("++++++++++++++++++++",clickeduser);
     var post = WallPost.find({posted_on_user_id : clickeduser.id}).sort('created', -1).execFind(function(err, posts) {
-      console.log("==============xxxxxxxxxxxx========================posts====",posts);
        if(posts.length == 0) {
          var user = User.findById(clickeduser.id,function(err,user) {
-           console.log("--------------xxxxxxxxxx----user",user);
            res.render('wallpost/index', {
 	     locals: {
 	         posts:posts,currentUser: req.currentUser, user:user, clickeduser:clickeduser
@@ -372,12 +357,10 @@ app.get('/user/wallposts/:id', loadUser, function(req, res) {
        }
      else {
        for(var i=0;i<posts.length;i++){
-         console.log("====================================posted on user id===", posts[i].posted_on_user_id);
          friendpost[i]= posts[i].user_id;
          comntArray[i] =  posts[i].id
        }
        var user = User.find({_id: {$in :friendpost}},function(err,users) {
-         console.log("---------------xxxxxxxxxxxxxx--",users);
          var comment = Comment.find({post_id: {$in :comntArray}}).sort('created', -1).execFind(function(err, comments) {
            for(var i=0;i<comments.length;i++){
              comntUser[i]= comments[i].user_id;
@@ -401,7 +384,6 @@ app.get('/user/wallposts/:id', loadUser, function(req, res) {
 
 // save new Wall post
 app.post('/wall/create', loadUser, function(req, res) {
-  //console.log("==================++++++++++++++++++req",req.body._id);
   var body = req.body.post.body;
   function postCreationFailed() {
    var user = User.findById(req.body._id, function(err, user) {
@@ -415,7 +397,6 @@ app.post('/wall/create', loadUser, function(req, res) {
     var validator = new Validator();
     validator.check(body,"Can't leave Post Body Empty").notNull();
     var errors = validator.getErrors();
-    console.log('---------------errors----================='+errors.length)
     if(errors.length > 0){
       req.flash('error', errors);
       res.redirect('/user/wallposts/'+user.id);
@@ -424,7 +405,6 @@ app.post('/wall/create', loadUser, function(req, res) {
   
     validator.check(body,"only 400 characters allowed").len(1,400);
       var errors = validator.getErrors();
-      console.log('---------------errors----================='+errors.length)
       if(errors.length > 0){
         req.flash('error', errors);
         res.redirect('/user/wallposts/'+user.id);
@@ -433,21 +413,16 @@ app.post('/wall/create', loadUser, function(req, res) {
     });
    }
    var user = User.findById(req.body._id, function(err, user) {
-   console.log("user==========================",user.username);
      var post = new WallPost();
      post.body = req.body.post.body;
-     console.log('===============================================wallpost',post.body);
      post.created = new Date();
      post.modified = new Date();
      post.user_id = req.currentUser.id;
      if(!(user._id == req.currentUser.id)){
-        console.log("------------------6546 use5r4158415", req.currentUser.id);
         post.posted_on_user_id = user.id;
      }else {
-        console.log("------------------current use5r4158415", req.currentUser.id);
         post.posted_on_user_id = req.currentUser.id;                 
      } 
-     console.log('======If This Works Everyting is Fine ------------------------------------------------------',post.posted_on_user_id);
      post.save(function(err) {
        if(err)
          return postCreationFailed();
@@ -479,9 +454,7 @@ app.get('/wall/create', loadUser, function(req, res) {
 
 app.post('/share/video', loadUser, function(req, res,next){
    var post = Post.findOne({_id:req.body._id},function(err, pst) { 
-    console.log('====================hereeeeeeeeeeeeeeee',pst);
     User.find({_id:pst.user_id},function(err, user) {
-      console.log('====================userrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr',user);
       var post = new Post();
       post.friend_id = user.username; 
       post.user_id = req.currentUser.id;
@@ -502,12 +475,9 @@ app.get('/user/wallposts/:id', loadUser, function(req, res) {
   var comntArray = new Array();
   var comntUser = new Array();
   var clicked_user =  User.findById(req.param('id'),function(err,clickeduser) {
-    console.log("++++++++++++++++++++",clickeduser);
     var post = WallPost.find({posted_on_user_id : clickeduser.id}).sort('created', -1).execFind(function(err, posts) {
-      console.log("==============xxxxxxxxxxxx========================posts====",posts);
        if(posts.length == 0) {
          var user = User.findById(clickeduser.id,function(err,user) {
-           console.log("--------------xxxxxxxxxx----user",user);
            res.render('wallpost/index', {
 	     locals: {
 	         posts:posts,currentUser: req.currentUser, user:user, clickeduser:clickeduser
@@ -517,12 +487,10 @@ app.get('/user/wallposts/:id', loadUser, function(req, res) {
        }
      else {
        for(var i=0;i<posts.length;i++){
-         console.log("====================================posted on user id===", posts[i].posted_on_user_id);
          friendpost[i]= posts[i].user_id;
          comntArray[i] =  posts[i].id
        }
        var user = User.find({_id: {$in :friendpost}},function(err,users) {
-         console.log("---------------xxxxxxxxxxxxxx--",users);
          var comment = Comment.find({post_id: {$in :comntArray}}).sort('created', -1).execFind(function(err, comments) {
            for(var i=0;i<comments.length;i++){
              comntUser[i]= comments[i].user_id;
@@ -551,7 +519,6 @@ app.get('/friendsinfo/show/:id',loadUser, function(req, res){
    console.log("req.current user id ", req.currentUser.id);
    console.log("clicked user info ", req.param('id'));
    User.findById(req.param('id'), function(error, user) {
-    console.log('=======================user info',user);
     var ua = req.headers['user-agent'].toLowerCase();
 	if(/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(ua)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(ua.substr(0,4))) {
          res.render('Social/friend_info_mobile', {
@@ -592,10 +559,8 @@ app.get('/show/friends', loadUser, function(req, res){
             else {
               myarray[i] = (friends[i].requestor);
             }
-            console.log('================my array==='+myarray[i]);
          }
         var user = User.find({_id: {$in :myarray}},function(err,users) {
-           console.log('================users==='+users);
            var ua = req.headers['user-agent'].toLowerCase();
 	if(/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(ua)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(ua.substr(0,4))) {
            res.render('Social/friend', {
@@ -605,7 +570,6 @@ app.get('/show/friends', loadUser, function(req, res){
              }
            });
          } else {  
-             console.log('================users==='+users);
              res.render('userinfo/show_friends', {
 	       locals: {
                  title: 'Friends',
@@ -684,8 +648,6 @@ app.post('/add/user', loadUser, function(req, res){
                                        {acceptor:req.currentUser.id, requestor:users[0]._id},
                                      ]
                                },function(err, friends) {
-       console.log("========================friends"+friends);
-       console.log("========================friends"+friends.length);
        //first time the user sends in the request
        if(friends.length==0)
          {
@@ -770,12 +732,9 @@ app.post('/userinfo/new', function(req, res, next) {
 //show the videos posted by user
 app.get('/user/videos/:id',loadUser, function(req, res){
  var clicked_user =  User.findById(req.param('id'),function(err,clickeduser) {
-    console.log("++++++++++++++++++++",clickeduser);
     var post = Post.find({user_id:clickeduser._id}).sort('created', -1).execFind(function(err, posts) {
-      console.log("==============xxxxxxxxxxxx========================posts====",posts);
        if(posts.length == 0) {
          var user = User.findById(clickeduser.id,function(err,user) {
-           console.log("--------------xxxxxxxxxx----user",user);
            res.render('videos/index1', {
 	     locals: {
 	         posts:posts,currentUser: req.currentUser, user:user, clickeduser:clickeduser
@@ -805,17 +764,13 @@ app.get('/user/videos/:id',loadUser, function(req, res){
 app.post('/videos', function(req, res, next) {
   //req.form.pause();
   req.form.complete(function(err, fields, files) {
-   console.log('=====================sesssssssssssssssion=========================='+req.session);
-   console.log('=====================current user==========================ins',req.session.user_id);
     if(err) {
       next(err);
     } else {
       ins = fs.createReadStream(files.file.path);
-      console.log('===============================================ins'+ins);
       ous = fs.createWriteStream(__dirname + '/public/uploads/photos/' + files.file.filename);
       var post = new Post();
       post.filename=files.file.filename;
-      console.log('========================================================='+post.filename);
       post.file=files.file.path;
       post.created_at = new Date();
       post.user_id = req.session.user_id;
@@ -868,9 +823,7 @@ app.get('/videos/new',loadUser, function(req, res){
 
 // update user information
 app.put('/user/edit/:id', loadUser, function(req, res, next) {
-  console.log('inside ====================================users edit=======');
   User.findById(req.params.id, function(err, user) {
-     console.log('user==============================='+user);
      function userUpdateFailed() {
         req.flash('error', 'Failed To Update The User!.. Please Try Again');
         res.render('users/edit', {
@@ -883,7 +836,6 @@ app.put('/user/edit/:id', loadUser, function(req, res, next) {
    if (!user)
       return next(new NotFound('User Not Found'));
     else {
-           console.log('=========================inside else===========');
            user.first_name = req.body.user.first_name 
            user.last_name =  req.body.user.last_name
            user.age =  req.body.user.age
@@ -911,7 +863,6 @@ app.put('/user/edit/:id', loadUser, function(req, res, next) {
 
 
 app.get('/user/edit/:id', loadUser, function(req, res, next) {
-  console.log('---------------------users edit-----');
   User.findById(req.params.id, function(err, user) {
     if (!user)
       return next(new NotFound('User could not be found'));
@@ -946,8 +897,6 @@ app.get('/user/edit/:id', loadUser, function(req, res, next) {
 
 app.get('/userinfo',loadUser, function(req, res){
   var user = User.find({_id:req.currentUser.id},function(err, users) {
-     console.log('============================tweater client',twitterClient);
-     console.log('============================tweats username',req.currentUser.username);
      twitterClient.userTimeline({screen_name : req.currentUser.username, count:30},
       function(err, tweets) {
         if(tweets.length == 0) {
@@ -959,7 +908,6 @@ app.get('/userinfo',loadUser, function(req, res){
            });
         }
         if(err) {
-          console.log('e================rrror',err);
         }
         else {
           //console.log('===========tweets========',tweets);
@@ -972,7 +920,6 @@ app.get('/userinfo',loadUser, function(req, res){
       
 
 
-      console.log('==========================inside userinfo===');
       var ua = req.headers['user-agent'].toLowerCase();
 	if(/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(ua)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(ua.substr(0,4))) {
               res.render('Social/index', {
@@ -1014,16 +961,12 @@ app.post('/users.:format?', function(req, res) {
   var last_name = req.body.user.last_name;
   var age = req.body.user.age;
   var password = req.body.user.password; 
-  console.log("----------------password---", password);
-  console.log("=============firstname",first_name);
-  console.log("=============type of ",typeof(first_name));
   var user = new User(req.body.user);
   var sex = new User(req.body.user.sex);
   user.photo='default.png';
   var sensor = false;
   var address = req.body.user.location;
    
-  console.log('email id ============================================='+user.email);
   geo.geocoder(geo.google, address, sensor,function(formattedAddress, latitude, longitude) {
     console.log("Formatted Address: " + formattedAddress);
     console.log("Latitude: " + latitude);
@@ -1045,9 +988,7 @@ app.post('/users.:format?', function(req, res) {
     var validator = new Validator();
     validator.check(first_name,'Please Enter A Valid First Name').regex(/^[a-zA-Z]+$/);
     var errors = validator.getErrors();
-    console.log('---------------errors----================='+errors.length)
     if(errors.length > 0){
-      console.log('+++++++++++++++++++++++++='+req);
       req.flash('error',errors);
       res.render('users/new', {
         locals: { user: new User(),}
@@ -1057,9 +998,7 @@ app.post('/users.:format?', function(req, res) {
     
     validator.check(last_name,'Please Enter A Valid Last Name').regex(/^[a-zA-Z]+$/);
     var errors1 = validator.getErrors();
-    console.log('---------------errors----================='+errors1.length)
     if(errors1.length > 0){
-      console.log('+++++++++++++++++++++++++='+req);
       req.flash('error',errors1);
       res.render('users/new.jade', {
         locals: { user: new User(),}
@@ -1070,10 +1009,8 @@ app.post('/users.:format?', function(req, res) {
     validator.check(age,'Age Cannot Contain String Value').regex(/^[0-9]+$/);
     validator.check(age,'Minimum Age Should be 18').min(18);
     var errors2 = validator.getErrors();
-    console.log('---------------errors----================='+errors2.length)
     if(errors2.length > 0){
       req.flash('error',errors2);
-      console.log('+++++++++++++++++++++++++='+req);
       res.render('users/new', {
         locals: { user: new User() }
       });
@@ -1082,7 +1019,6 @@ app.post('/users.:format?', function(req, res) {
    
     validator.check(email,'Please Enter A Valid Email').isEmail();
     var errors3 = validator.getErrors();
-    console.log('---------------errors----================='+errors3.length)
     if(errors.length > 0){
       req.flash('error',errors3);
       res.render('users/new', {
@@ -1094,7 +1030,6 @@ app.post('/users.:format?', function(req, res) {
     //validator.check(password,'Password Field Can Not Be Empty ').notEmpty();
     validator.check(password,'Password should b 5 characters long').len(5,20);
     var errors4 = validator.getErrors();
-    console.log('---------------errors----================='+errors4.length)
     if(errors.length > 0){
       req.flash('error',errors4);
       res.render('users/new', {
@@ -1109,11 +1044,9 @@ app.post('/users.:format?', function(req, res) {
    User.find({}, function(err, users) {
      for(var i = 0;i< users.length;i++) {
         if(users[i].email == email) {
-           console.log("+++++++++++++++++++++++++++++++++++++XXXXXXXXXXXXXXXXXX++++++++++++++++",users[i].email);
            useremail = users[i].email;
         }
      }
-     console.log("+++++++++++++++++++++++++++++++++++++yyyyyyyyyyyyyyyyyyyyyyyyyy++++++++++++++++",useremail);
      if(!useremail) {
         user.save(function(err) {
           if (err) return userSaveFailed();
@@ -1160,16 +1093,13 @@ app.get('/sessions/new', function(req, res) {
 });
 
 app.post('/sessions', function(req, res) {
-  console.log('========================================================================inside sessions');
   User.findOne({ email: req.body.user.email }, function(err, user) {
-    console.log('====================users ==================='+user);
      if(typeof(user)==undefined) {
        console.log('invalid username password');
        req.flash('error', 'Invalid username password!..Please Try Again');
        res.redirect('/sessions/new');
      }
      if (user && user.authenticate(req.body.user.password)) {
-       console.log('====================users ==================='+user);
       
        req.session.user_id = user.id;
        console.log("---------------------------user session information---------------"+req.session.user_id);
@@ -1243,7 +1173,6 @@ app.post('/search.:format?', loadUser, function(req, res) {
 
 //show user details
 app.get('/users/show/:id',loadUser, function(req, res){
-   console.log('=================param id===',req.param('id'));
    User.findById(req.param('id'), function(error, user) {
      var friend = Friends.find({ $or : [
                                        {requestor:req.currentUser.id, acceptor:user._id},
@@ -1252,7 +1181,6 @@ app.get('/users/show/:id',loadUser, function(req, res){
                                },function(err, friend) {
         console.log('user info',user);
         console.log('Friend info',friend);
-        console.log('Friend length==========================',friend.length);
         //console.log('Friend Status==========================',friend[0].status);
         res.render('userinfo/show', {
           locals: {
