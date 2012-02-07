@@ -83,7 +83,7 @@ html
                                                 -each user in users
                                                   li
                                                     div 
-                                                      a(href="/friendsinfo/show/"+user._id.toHexString())!= user.first_name+"&nbsp;"+user.last_name
+                                                      a(href="/userinfo/profile/"+user._id.toHexString())!= user.first_name+"&nbsp;"+user.last_name
                                                     div
                                                       img(src='/uploads/photos/'+user.photo, width=80, name='user[image]')
                                                     br
