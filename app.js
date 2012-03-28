@@ -73,10 +73,10 @@ app.configure(function(){
     domain : "darhamid-desktop",
     host: 'smtp.gmail.com',
     port: '25',
-    from: 'hamid.dar@pragtech.co.in',
+    from: 'abc.cde',
     authentication : "login",        // auth login is supported; anything else is no auth
-    username : "hamid.dar@pragtech.co.in",        // username
-    password : "lii!@# mra! "         // password
+    username : "",        // username
+    password : ""         // password
   });
 });
    
