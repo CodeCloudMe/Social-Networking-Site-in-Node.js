@@ -35,34 +35,24 @@ html(manifest='cache.manifest')
         div(data-role='navbar')
           ul
             li
-              a.ui-btn-active.ui-state-persist(href='home.html') Profile
+              a.ui-btn-active.ui-state-persist(href='/userinfo/profile/'+user._id.toString()) Profile
             li
-              a(href='/wallpost') Wall
+               a(href='/user/wallposts/'+user._id.toHexString()) Wall
             li
               a(href='/show/friends') Friends
       div(data-role='content')
-        -each user in users 
-          ul(data-role='listview', data-inset='true', style='padding: 0px;')
+        p Node.js is all about making event-driven, low-latency, concurrent apps. Erlang, the language that powers Facebook’s chat server, uses the same model. Tornado, a concurrent server for Python that powers FriendFeed, was an attempt at this, too. But Node has one advantage over technologies like Erlang and Tornado: “None of that was too accessible,” says Hughes-Croucher. “Node takes a language people know very well — Javascript — and makes it available to do server programming, as well.”
+                                                 p In t
+
+              a(href='/user/wallposts/'+user._id.toHexString()) Wall
             li
-              img(src='/uploads/photos/'+user.photo, width=40)
-              h3(style='margin: 0px; padding: 0px;')=user.username
-              h6=user.sex
-              p=user.location
-          ul(data-role='listview', data-theme='c', data-inset='true')
-            li(data-role='list-divider') Age
-            li
-              h5=user.age
-            li(data-role='list-divider') Email Id
-            li
-              h5=user.email
-          ul(data-role='listview', data-theme='c', data-inset='true')
-            li(data-role='list-divider') More
+              a(href='/userinfo/profile/'+user._id.toString()) Profile
             li
               a(href='/show/friendrequests') Friend Request
             li
-              a(href='/videos') Video Posted
+              a(href='/show/friends') Friends
             li
-              a(href='upload_video.html') Upload New Video
+              a(href='/user/videos/'+ user._id) Videos Posted
             li
               a(href='/user/edit/'+user._id) Edit Profile
             li

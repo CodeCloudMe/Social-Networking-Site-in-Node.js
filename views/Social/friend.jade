@@ -37,17 +37,17 @@ html
         div(data-role='navbar')
           ul
             li
-              a(href='/userinfo') Profile
+              a(href='/userinfo/profile/'+currentUser._id.toString()) Profile
             li
-              a(href='/wallpost') Wall
+              a(href='/user/wallposts/'+currentUser._id.toHexString()) Wall
             li
-              a.ui-btn-active.ui-state-persist(href='friend.html') Friends
+              a(href='/userinfo') Home
       div(data-role='content')
         ol(data-role='listview', data-filter='true', data-filter-placeholder='Search Friend', data-inset='true', data-position='fixed')
           -each user in users
             li
               div
-                a(href="/friendinfo/show/"+user._id.toHexString())!= user.first_name+"&nbsp;"+user.last_name
+                a(href="/userinfo/profile/"+user._id.toHexString())!= user.first_name+"&nbsp;"+user.last_name
               div
                 img(src='/uploads/photos/'+user.photo, width=40)
               br

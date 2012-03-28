@@ -35,9 +35,9 @@ html
         div(data-role='navbar')
           ul
             li
-              a.ui-btn-active.ui-state-persist(href='home.html') Profile
+              a.ui-btn-active.ui-state-persist(href='/userinfo/profile/'+user._id.toString()) Profile
             li
-              a(href='/wallpost') Wall
+              a(href='/user/wallposts/'+user._id.toHexString()) Wall
             li
               a(href='/show/friends') Friends
       div(data-role='content')
